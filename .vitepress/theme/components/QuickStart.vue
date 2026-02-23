@@ -70,7 +70,8 @@ onMounted(async () => {
         throw new Error("HTTP " + res.status);
       }
     } catch (e) {
-      codeSnippets[key] = `Error fetching resource from URL.\n\nPlease visit: ${url}`;
+      codeSnippets[key] =
+        `Error fetching resource from URL.\n\nPlease visit: ${url}`;
       codeHeights[key] = 120;
     }
   }
