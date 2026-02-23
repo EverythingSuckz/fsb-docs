@@ -60,8 +60,8 @@ export default defineConfig({
 
     editLink: {
       pattern:
-        "https://github.com/EverythingSuckz/TG-FileStreamBot/edit/main/docs/:path",
-      text: "Edit this page on GitHub",
+        "https://github.com/EverythingSuckz/fsb-docs/edit/main/:path",
+      text: "Edit this page",
     },
 
     lastUpdated: {
