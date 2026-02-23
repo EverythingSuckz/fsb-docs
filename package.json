@@ -1,0 +1,26 @@
+{
+  "name": "docs",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/bun": "latest",
+    "oxlint": "^1.49.0",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4.1.18",
+    "vitepress": "^2.0.0-alpha.16",
+    "vue": "^3.5.28"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "dependencies": {
+    "lucide-vue-next": "^0.574.0"
+  }
+}
