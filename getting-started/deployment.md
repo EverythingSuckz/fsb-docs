@@ -31,7 +31,7 @@ If you prefer Heroku, we have you covered as well.
 
 Note that you must fork the main repository to deploy to Heroku first. Once you have done that, click the button below.
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/EverythingSuckz/TG-FileStreamBot)
 
 ## VPS or Dedicated Server
 
