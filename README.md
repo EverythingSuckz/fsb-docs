@@ -1,15 +1,18 @@
-# docs
+# fsb-docs
 
-To install dependencies:
+Documentation site for [TG-FileStreamBot](https://github.com/EverythingSuckz/TG-FileStreamBot), built with [VitePress](https://vitepress.dev).
+
+**Live site:** [filestream.bot](https://filestream.bot)
+
+## Development
 
 ```bash
 bun install
+bun run docs:dev
 ```
 
-To run:
+## Build
 
 ```bash
-bun run index.ts
+bun run docs:build
 ```
-
-This project was created using `bun init` in bun v1.3.9. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
