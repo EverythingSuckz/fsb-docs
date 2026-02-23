@@ -78,6 +78,34 @@ export default defineConfig({
       "meta",
       { name: "viewport", content: "width=device-width, initial-scale=1.0" },
     ],
+    // OpenGraph
+    ["meta", { property: "og:type", content: "website" }],
+    ["meta", { property: "og:title", content: "Telegram File Stream Bot" }],
+    [
+      "meta",
+      {
+        property: "og:description",
+        content:
+          "Generate instant download URLs for any Telegram file. High-performance Go backend with multi-bot load balancing.",
+      },
+    ],
+    ["meta", { property: "og:image", content: "https://filestream.bot/og.png" }],
+    ["meta", { property: "og:url", content: "https://filestream.bot" }],
+    // Twitter Card
+    ["meta", { name: "twitter:card", content: "summary_large_image" }],
+    ["meta", { name: "twitter:title", content: "Telegram File Stream Bot" }],
+    [
+      "meta",
+      {
+        name: "twitter:description",
+        content:
+          "Generate instant download URLs for any Telegram file.",
+      },
+    ],
+    [
+      "meta",
+      { name: "twitter:image", content: "https://filestream.bot/og.png" },
+    ],
   ],
   cleanUrls: true
 });
