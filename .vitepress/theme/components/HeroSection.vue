@@ -177,7 +177,8 @@ function toggleFullscreen() {
           class="text-lg leading-relaxed text-text-secondary max-w-130 mb-8 animate-fade-in-up"
           style="animation-delay: 0.2s"
         >
-          Generate instant download URLs for any Telegram file. Powered by a high-performance Go backend with multi-bot load balancing.
+          Generate instant download URLs for any Telegram file. Powered by a
+          high-performance Go backend with multi-bot load balancing.
         </p>
 
         <!-- Buttons -->

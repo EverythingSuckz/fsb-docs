@@ -59,8 +59,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern:
-        "https://github.com/EverythingSuckz/fsb-docs/edit/main/:path",
+      pattern: "https://github.com/EverythingSuckz/fsb-docs/edit/main/:path",
       text: "Edit this page",
     },
 
@@ -89,7 +88,10 @@ export default defineConfig({
           "Generate instant download URLs for any Telegram file. High-performance Go backend with multi-bot load balancing.",
       },
     ],
-    ["meta", { property: "og:image", content: "https://filestream.bot/og.png" }],
+    [
+      "meta",
+      { property: "og:image", content: "https://filestream.bot/og.png" },
+    ],
     ["meta", { property: "og:url", content: "https://filestream.bot" }],
     // Twitter Card
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -98,8 +100,7 @@ export default defineConfig({
       "meta",
       {
         name: "twitter:description",
-        content:
-          "Generate instant download URLs for any Telegram file.",
+        content: "Generate instant download URLs for any Telegram file.",
       },
     ],
     [
@@ -107,5 +108,5 @@ export default defineConfig({
       { name: "twitter:image", content: "https://filestream.bot/og.png" },
     ],
   ],
-  cleanUrls: true
+  cleanUrls: true,
 });
