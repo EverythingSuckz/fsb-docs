@@ -35,21 +35,13 @@ Note that you must fork the main repository to deploy to Heroku first. Once you 
 
 ## VPS or Dedicated Server
 
-The easiest way to install TG-FileStreamBot on your own Linux server or macOS machine is via our interactive installation script:
-
-```bash
-curl -sL https://filestream.bot/install | bash
-```
-
-Alternatively, you can download the binary manually from the [releases page](https://github.com/EverythingSuckz/TG-FileStreamBot/releases), extract it, and run it.
-
-For a more detailed explanation of these installation methods (including Docker architectures), check out the [Installation Guide](./installation.md).
+Follow the same steps mentioned in the [Installation Guide](./installation.md#install-script).
 
 ### Setting Up a Systemd Service
 
 To keep the bot running permanently in the background, we recommend creating a systemd service.
 
-1. Ensure the binary is accessible in your PATH. The `install.sh` script does this automatically. If you downloaded it manually, move it: `sudo cp fsb /usr/local/bin/fsb`.
+1. Ensure the binary is accessible in your PATH. If you downloaded it manually, move it: `sudo cp fsb /usr/local/bin/fsb`.
 2. Create a new service file at `/etc/systemd/system/fsb.service`.
 
 ```ini
@@ -81,6 +73,10 @@ sudo systemctl start fsb
 The default port is `8080`, but you can change this using the `PORT` environment variable. When deploying to cloud platforms, make sure you expose the correct port.
 
 Platforms like Koyeb and Heroku handle SSL automatically, so your stream links will use HTTPS. If you are self-hosting on a VPS, you will want to set up a reverse proxy like Nginx or Caddy with Let's Encrypt to handle HTTPS.
+
+::: tip  :green_circle: NOTE
+This section will be updated soon with more detailed guides. If you would like to contribute, please press the "Edit this page" button at the bottom of the page and submit a pull request with your improvements.
+:::
 
 ## Next Steps
 

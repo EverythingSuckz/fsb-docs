@@ -1,6 +1,6 @@
 # Multi-Bot Setup
 
-TG-FileStreamBot supports using multiple bot tokens to distribute stream requests and avoid Telegram API rate limits.
+`FSB` supports using multiple bot tokens to distribute stream requests and avoid Telegram API rate limits.
 
 ## How It Works
 
@@ -49,4 +49,8 @@ With multiple workers:
 
 You can use the `USER_SESSION` feature to automatically add worker bots to your log channel.
 
-See [User Session Authentication](./troubleshooting#user-session) for setup instructions.
+See [User Session Authentication](./troubleshooting#exploring-user-sessions) for setup instructions.
+
+::: tip  :green_circle: NOTE
+This section will be updated soon with more detailed guides. If you would like to contribute, please press the "Edit this page" button at the bottom of the page and submit a pull request with your improvements.
+:::

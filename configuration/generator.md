@@ -10,13 +10,11 @@ import EnvBuilder from '../.vitepress/theme/components/EnvBuilder.vue'
 
 ## Example `fsb.env`
 
-If you prefer a manual reference, here is what a typical environment file looks like:
+Here is here's how `fsb.env` file looks like:
 
 ```bash
 API_ID=452525
 API_HASH=esx576f8738x883f3sfzx83
 BOT_TOKEN=55838383:yourbottokenhere
 LOG_CHANNEL=-10045145224562
-PORT=8080
-HOST=http://yourserverip
 ```

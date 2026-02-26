@@ -85,6 +85,11 @@ Approximate Telegram API calls at peak: `active_streams × STREAM_CONCURRENCY`
 4. Use [Multi-Bot Setup](../advanced/multi-bot) to distribute API calls across tokens
 5. Balance throughput against Telegram rate limits
 
-::: warning
-Higher `STREAM_CONCURRENCY` directly increases Telegram API pressure: `active_streams × concurrency = peak API calls`. Size accordingly.
+::: info  :orange_circle: WARNING
+
+Higher STREAM_CONCURRENCY directly increases Telegram API pressure:
+
+$$
+	\text{peak API calls} = \text{active\_streams} \times \text{concurrency}
+$$
 :::
