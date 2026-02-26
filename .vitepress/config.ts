@@ -109,4 +109,7 @@ export default defineConfig({
     ],
   ],
   cleanUrls: true,
+  markdown: {
+    math: true,
+  }
 });
