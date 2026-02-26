@@ -6,6 +6,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "@types/bun": "latest",
+    "markdown-it-mathjax3": "^4",
     "oxlint": "^1.49.0",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.1.18",
