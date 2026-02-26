@@ -82,8 +82,12 @@ const sections: EnvSection[] = [
         required: true,
         help: "Channel ID for storage",
         helpLink: "/getting-started/prerequisites",
-        validate: (v: string) =>
-          v && !v.startsWith("-100") ? "Must start with -100" : null,
+        validate: (v: string) => {
+          if (!v) return null;
+          if (!/^-100\d+$/.test(v))
+            return "Must start with -100 followed by digits";
+          return null;
+        },
       },
     ],
   },
@@ -291,6 +295,10 @@ function addMultiToken() {
     multiTokenError.value = "Token already added";
     return;
   }
+  if (token === String(values.value["BOT_TOKEN"] ?? "").trim()) {
+    multiTokenError.value = "Cannot be the same as your main Bot Token";
+    return;
+  }
   if (multiTokens.value.length >= MAX_TOKENS) {
     multiTokenError.value = `Maximum ${MAX_TOKENS} tokens allowed`;
     return;
@@ -345,7 +353,7 @@ const envContent = computed(() => {
 const hasRequiredFields = computed(() => {
   return sections
     .find((s) => s.id === "required")
-    ?.fields.every((f) => values.value[f.key]?.trim());
+    ?.fields.every((f) => String(values.value[f.key] ?? "").trim());
 });
 
 const validationErrors = computed(() => {
@@ -358,9 +366,8 @@ const validationErrors = computed(() => {
         errors[f.key] =
           input && !/^\d+$/.test(input) ? "Must be a number" : null;
       } else {
-        errors[f.key] = f.validate
-          ? f.validate(values.value[f.key] || "")
-          : null;
+        const val = String(values.value[f.key] ?? "");
+        errors[f.key] = f.validate ? f.validate(val) : null;
       }
     });
   return errors;
@@ -419,10 +426,6 @@ function downloadFile() {
         v-for="section in sections"
         :key="section.id"
         class="border border-border-subtle rounded-lg bg-surface/50 overflow-hidden"
-        :class="{
-          'border-fsb/20 shadow-[0_0_15px_rgba(0,255,133,0.05)]':
-            openSections[section.id],
-        }"
       >
         <button
           @click="toggleSection(section.id)"
@@ -614,10 +617,6 @@ function downloadFile() {
       <!-- Multi-Bot Tokens Section -->
       <div
         class="border border-border-subtle rounded-lg bg-surface/50 overflow-hidden"
-        :class="{
-          'border-fsb/20 shadow-[0_0_15px_rgba(0,255,133,0.05)]':
-            openSections['multibot'],
-        }"
       >
         <button
           @click="toggleSection('multibot')"
