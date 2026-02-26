@@ -85,12 +85,21 @@ Sometimes things go wrong. Here are some common problems and solutions.
 
 If you need to automatically add bots to your log channel, you need a `USER_SESSION`. Run the following command:
 
-```bash
+::: code-group
+```bash [Linux/macOS/Termux]
 ./fsb session --api-id <your_api_id> --api-hash <your_api_hash>
 ```
+```powershell [Windows]
+.\fsb session --api-id <your_api_id> --api-hash <your_api_hash>
+```
+:::
+
+::: info :orange_circle: WARNING
+Use this feature with caution. Newly created accounts might get banned by Telegram.
+:::
 
 Scan the generated QR code with your Telegram app. If the session is invalid or expired, just generate a new one.
 
 ## Getting Help
 
-If none of this helped, you can always open a [GitHub Issue](https://github.com/EverythingSuckz/TG-FileStreamBot/issues) or join the [Telegram Support Group](https://t.me/AlteredVoid). We won't bite.
+If none of this helped, you can always open a [GitHub Issue](https://github.com/EverythingSuckz/TG-FileStreamBot/issues) or join the [Telegram Support Group](https://t.me/AlteredVoid). We won't bite.. unless you don't follow the common internet etiquettes.
