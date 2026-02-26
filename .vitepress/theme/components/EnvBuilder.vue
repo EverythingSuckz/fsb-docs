@@ -12,6 +12,8 @@ import {
   Settings,
   Info,
   X,
+  Plus,
+  Bot,
 } from "lucide-vue-next";
 
 interface EnvField {
@@ -148,19 +150,13 @@ const sections: EnvSection[] = [
       {
         key: "ALLOWED_USERS",
         label: "Allowed Users",
-        placeholder: "Type user ID and press comma",
+        placeholder: "Type user ID and press Enter",
         type: "tags",
-        help: "Comma-separated user IDs",
+        help: "Restrict access by user ID",
         validate: (v: string) =>
           v && !/^(\d+\s*,\s*)*\d+$/.test(v.trim())
             ? "Must be comma-separated numbers"
             : null,
-      },
-      {
-        key: "USER_SESSION",
-        label: "User Session",
-        placeholder: "StringSession...",
-        help: "For userbot features",
       },
     ],
   },
@@ -214,13 +210,22 @@ const sections: EnvSection[] = [
   },
 ];
 
+const MAX_TOKENS = 50;
+
 const values = ref<Record<string, string>>({});
 const tags = ref<Record<string, string[]>>({ ALLOWED_USERS: [] });
 const tagInputs = ref<Record<string, string>>({ ALLOWED_USERS: "" });
+
+// Multi-bot tokens state
+const multiTokens = ref<string[]>([]);
+const multiTokenInput = ref("");
+const multiTokenError = ref<string | null>(null);
+
 const openSections = ref<Record<string, boolean>>({
   required: true,
   optional: false,
   performance: false,
+  multibot: false,
 });
 const copied = ref(false);
 
@@ -234,6 +239,8 @@ sections.forEach((s) =>
     }
   }),
 );
+// USER_SESSION lives in the Multi-Bot section, init separately
+values.value["USER_SESSION"] = "";
 
 function toggleBool(key: string) {
   values.value[key] = values.value[key] === "true" ? "false" : "true";
@@ -268,20 +275,71 @@ function syncTagsToValues(key: string) {
   values.value[key] = tags.value[key]?.join(", ") ?? "";
 }
 
+// Multi-bot token functions
+function validateBotToken(v: string) {
+  return /^\d+:[A-Za-z0-9_-]+$/.test(v);
+}
+
+function addMultiToken() {
+  const token = multiTokenInput.value.trim();
+  if (!token) return;
+  if (!validateBotToken(token)) {
+    multiTokenError.value = "Format: 123456:ABC-DEF...";
+    return;
+  }
+  if (multiTokens.value.includes(token)) {
+    multiTokenError.value = "Token already added";
+    return;
+  }
+  if (multiTokens.value.length >= MAX_TOKENS) {
+    multiTokenError.value = `Maximum ${MAX_TOKENS} tokens allowed`;
+    return;
+  }
+  multiTokens.value.push(token);
+  multiTokenInput.value = "";
+  multiTokenError.value = null;
+}
+
+function removeMultiToken(index: number) {
+  multiTokens.value.splice(index, 1);
+}
+
+function handleMultiTokenKeydown(e: KeyboardEvent) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    addMultiToken();
+  }
+  if (
+    e.key === "Backspace" &&
+    !multiTokenInput.value &&
+    multiTokens.value.length
+  ) {
+    multiTokens.value.pop();
+  }
+}
+
+// Computed env content
 const activeFields = computed(() => {
   return sections
     .flatMap((s) => s.fields)
     .filter((f) => {
       if (f.type === "tags") return (tags.value[f.key]?.length ?? 0) > 0;
-      const val = values.value[f.key];
-      return val && val.trim() !== "";
+      const val = String(values.value[f.key] ?? "");
+      return val.trim() !== "";
     });
 });
 
 const envContent = computed(() => {
-  return activeFields.value
-    .map((f) => `${f.key}=${values.value[f.key]?.trim() ?? ""}`)
-    .join("\n");
+  const lines: string[] = [];
+  activeFields.value.forEach((f) => {
+    lines.push(`${f.key}=${String(values.value[f.key] ?? "").trim()}`);
+  });
+  multiTokens.value.forEach((token, i) => {
+    lines.push(`MULTI_TOKEN${i + 1}=${token}`);
+  });
+  const session = values.value["USER_SESSION"]?.trim();
+  if (session) lines.push(`USER_SESSION=${session}`);
+  return lines.join("\n");
 });
 
 const hasRequiredFields = computed(() => {
@@ -296,7 +354,6 @@ const validationErrors = computed(() => {
     .flatMap((s) => s.fields)
     .forEach((f) => {
       if (f.type === "tags") {
-        // Validate tag input only if there's something typed but not committed
         const input = tagInputs.value[f.key]?.trim();
         errors[f.key] =
           input && !/^\d+$/.test(input) ? "Must be a number" : null;
@@ -357,11 +414,11 @@ function downloadFile() {
     </div>
 
     <div class="p-5 flex flex-col gap-4">
-      <!-- Sections -->
+      <!-- Regular Sections -->
       <div
         v-for="section in sections"
         :key="section.id"
-        class="border border-border-subtle rounded-lg bg-surface/50 overflow-hidden transition-all duration-300"
+        class="border border-border-subtle rounded-lg bg-surface/50 overflow-hidden"
         :class="{
           'border-fsb/20 shadow-[0_0_15px_rgba(0,255,133,0.05)]':
             openSections[section.id],
@@ -394,7 +451,7 @@ function downloadFile() {
           <component
             :is="openSections[section.id] ? ChevronUp : ChevronDown"
             :size="16"
-            class="text-text-tertiary transition-transform duration-300"
+            class="text-text-tertiary shrink-0"
           />
         </button>
 
@@ -444,7 +501,7 @@ function downloadFile() {
               >
               <button
                 @click="toggleBool(field.key)"
-                class="relative w-10 h-[22px] rounded-full transition-colors duration-200 cursor-pointer border-none outline-none"
+                class="relative w-10 h-[22px] rounded-full transition-colors duration-200 cursor-pointer border-none outline-none shrink-0"
                 :class="
                   values[field.key] === 'true' ? 'bg-fsb/80' : 'bg-white/10'
                 "
@@ -521,7 +578,7 @@ function downloadFile() {
                 "
               >
                 <span
-                  class="pl-3 py-2 font-mono text-xs text-text-tertiary select-none"
+                  class="pl-3 py-2 font-mono text-xs text-text-tertiary select-none shrink-0"
                   >{{ field.key }}=</span
                 >
                 <input
@@ -549,6 +606,198 @@ function downloadFile() {
               class="mt-1 text-[0.6rem] text-text-tertiary/60 font-mono pl-1"
             >
               Default: {{ field.default }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-Bot Tokens Section -->
+      <div
+        class="border border-border-subtle rounded-lg bg-surface/50 overflow-hidden"
+        :class="{
+          'border-fsb/20 shadow-[0_0_15px_rgba(0,255,133,0.05)]':
+            openSections['multibot'],
+        }"
+      >
+        <button
+          @click="toggleSection('multibot')"
+          class="w-full flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors text-left"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="p-1.5 rounded-md transition-colors"
+              :class="
+                openSections['multibot']
+                  ? 'bg-fsb/10 text-fsb'
+                  : 'bg-border-subtle text-text-tertiary'
+              "
+            >
+              <Bot :size="16" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <div class="font-semibold text-sm text-text-primary">
+                  Multi-Bot Tokens
+                </div>
+                <span
+                  v-if="multiTokens.length > 0"
+                  class="text-[0.6rem] font-mono text-text-tertiary"
+                  >{{ multiTokens.length }}/{{ MAX_TOKENS }}</span
+                >
+              </div>
+              <div class="text-xs text-text-tertiary">
+                Worker bots for round-robin streaming.
+              </div>
+            </div>
+          </div>
+          <component
+            :is="openSections['multibot'] ? ChevronUp : ChevronDown"
+            :size="16"
+            class="text-text-tertiary shrink-0"
+          />
+        </button>
+
+        <div
+          v-show="openSections['multibot']"
+          class="px-4 pb-4 pt-3 border-t border-border-subtle space-y-3 animate-fade-in"
+        >
+          <!-- Slim hint -->
+          <p class="text-[0.7rem] text-text-tertiary/60 leading-relaxed">
+            Worker bots are assigned as
+            <span class="font-mono text-text-tertiary">MULTI_TOKEN1</span>,
+            <span class="font-mono text-text-tertiary">MULTI_TOKEN2</span>, …
+            and distribute stream requests in round-robin to reduce rate limits.
+          </p>
+
+          <!-- Token list -->
+          <div v-if="multiTokens.length > 0" class="space-y-1.5">
+            <div
+              v-for="(token, i) in multiTokens"
+              :key="i"
+              class="group flex items-center gap-2 px-3 py-2 rounded-lg bg-black/20 border border-border-subtle hover:border-red-500/20 transition-all"
+            >
+              <span
+                class="text-[0.6rem] font-mono text-text-tertiary/60 shrink-0 w-20"
+                >MULTI_TOKEN{{ i + 1 }}=</span
+              >
+              <span
+                class="flex-1 font-mono text-xs text-text-secondary truncate"
+                >{{ token }}</span
+              >
+              <button
+                @click="removeMultiToken(i)"
+                class="opacity-0 group-hover:opacity-100 text-text-tertiary hover:text-red-400 transition-all cursor-pointer bg-transparent border-none p-0.5 rounded shrink-0"
+                title="Remove"
+              >
+                <X :size="13" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Add token input -->
+          <div v-if="multiTokens.length < MAX_TOKENS">
+            <div class="flex gap-2">
+              <div
+                class="flex-1 flex items-center bg-black/20 border rounded-lg transition-all"
+                :class="
+                  multiTokenError
+                    ? 'border-red-500/50 ring-1 ring-red-500/20'
+                    : 'border-border-subtle focus-within:border-fsb/40 focus-within:ring-1 focus-within:ring-fsb/20'
+                "
+              >
+                <span
+                  class="pl-3 py-2 font-mono text-xs text-text-tertiary select-none shrink-0"
+                  >MULTI_TOKEN{{ multiTokens.length + 1 }}=</span
+                >
+                <input
+                  v-model="multiTokenInput"
+                  @keydown="handleMultiTokenKeydown"
+                  @input="multiTokenError = null"
+                  placeholder="123456:ABC-DEF..."
+                  class="flex-1 min-w-0 bg-transparent border-none text-xs font-mono text-text-primary placeholder:text-text-tertiary/40 py-2 pr-3 focus:outline-none focus:ring-0"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+              <button
+                @click="addMultiToken"
+                :disabled="!multiTokenInput.trim()"
+                class="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border-medium bg-white/5 text-text-secondary text-xs hover:bg-fsb/10 hover:border-fsb/30 hover:text-fsb disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0"
+              >
+                <Plus :size="13" />
+                Add
+              </button>
+            </div>
+            <div
+              v-if="multiTokenError"
+              class="mt-1 text-[0.6rem] text-red-400 font-mono pl-1"
+            >
+              {{ multiTokenError }}
+            </div>
+            <div
+              v-else
+              class="mt-1 text-[0.6rem] text-text-tertiary/50 font-mono pl-1"
+            >
+              Press Enter or click Add · Max {{ MAX_TOKENS }} tokens
+            </div>
+          </div>
+
+          <!-- Max reached -->
+          <div
+            v-else
+            class="text-[0.65rem] text-text-tertiary/60 font-mono text-center py-1"
+          >
+            Maximum {{ MAX_TOKENS }} tokens reached (Telegram channel admin
+            limit)
+          </div>
+
+          <!-- USER_SESSION field -->
+          <div class="pt-1 border-t border-border-subtle mt-1">
+            <div class="flex items-center justify-between mb-1.5">
+              <label
+                for="env-USER_SESSION"
+                class="text-xs font-semibold text-text-secondary"
+                >User Session
+              </label>
+              <span class="text-[0.65rem] text-text-tertiary"
+                >Optional · for auto-adding bots</span
+              >
+            </div>
+            <div
+              class="flex items-center bg-black/20 border rounded-lg transition-all"
+              :class="'border-border-subtle focus-within:border-fsb/40 focus-within:ring-1 focus-within:ring-fsb/20'"
+            >
+              <span
+                class="pl-3 py-2 font-mono text-xs text-text-tertiary select-none shrink-0"
+                >USER_SESSION=</span
+              >
+              <input
+                id="env-USER_SESSION"
+                v-model="values['USER_SESSION']"
+                type="text"
+                placeholder="StringSession..."
+                class="flex-1 bg-transparent border-none text-xs font-mono text-text-primary placeholder:text-text-tertiary/40 py-2 pr-3 focus:outline-none focus:ring-0"
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+            <!-- Auto-add hint -->
+            <div
+              v-if="values['USER_SESSION']?.trim() && multiTokens.length > 0"
+              class="mt-1.5 flex items-center gap-1.5 text-[0.65rem] text-fsb/70"
+            >
+              <Check :size="11" />
+              {{ multiTokens.length }} worker bot{{
+                multiTokens.length === 1 ? "" : "s"
+              }}
+              will be automatically added to your log channel.
+            </div>
+            <div
+              v-else
+              class="mt-1 text-[0.6rem] text-text-tertiary/50 font-mono pl-1"
+            >
+              Add a user session to automatically add worker bots to your log
+              channel.
             </div>
           </div>
         </div>
