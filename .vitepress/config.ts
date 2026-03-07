@@ -24,6 +24,7 @@ export default defineConfig({
         text: "Getting Started",
         items: [
           { text: "Introduction", link: "/getting-started/" },
+          { text: "How It Works", link: "/getting-started/how-it-works" },
           { text: "Prerequisites", link: "/getting-started/prerequisites" },
           { text: "Installation", link: "/getting-started/installation" },
           { text: "Deployment", link: "/getting-started/deployment" },
