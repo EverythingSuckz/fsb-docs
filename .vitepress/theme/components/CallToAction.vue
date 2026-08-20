@@ -50,7 +50,7 @@ const { stars, displayedContributors, totalContributors } = useGitHubRepo();
       <!-- Buttons -->
       <div class="flex gap-4 justify-center flex-wrap mb-16">
         <SecondaryButton
-          href="https://t.me/YourTelegramGroup"
+          href="https://t.me/fsb_support"
           text="Telegram"
           :icon="SendIcon"
           accent-color="#229ED9"
